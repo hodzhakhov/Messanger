@@ -1,0 +1,1 @@
+add_library(MessangerServerLib messanger.h messanger.cpp)
