@@ -1,0 +1,39 @@
+#include "server.h"
+
+int main(int argc, char* argv[]) {
+  try {
+    if (argc < 2) {
+      std::cerr << "Usage: chat_server <port> [<port> ...]\n";
+      return 1;
+    }
+
+    auto io_context = std::make_shared<boost::asio::io_context>();
+    auto work = std::make_shared<boost::asio::executor_work_guard<
+        boost::asio::io_context::executor_type>>(
+        boost::asio::make_work_guard(*io_context));
+    auto strand = std::make_shared<
+        boost::asio::strand<boost::asio::io_context::executor_type>>(
+        boost::asio::make_strand(*io_context));
+
+    std::cout << "[" << std::this_thread::get_id() << "] server starts"
+              << std::endl;
+
+    std::list<std::shared_ptr<server>> servers;
+    for (int i = 1; i < argc; ++i) {
+      tcp::endpoint endpoint(tcp::v4(), std::atoi(argv[i]));
+      auto a_server = std::make_shared<server>(*io_context, *strand, endpoint);
+      servers.push_back(a_server);
+    }
+
+    boost::thread_group workers;
+    for (int i = 0; i < 1; ++i) {
+      workers.create_thread([io_context]() { io_context->run(); });
+    }
+
+    workers.join_all();
+  } catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+
+  return 0;
+}
