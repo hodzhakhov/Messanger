@@ -1,6 +1,6 @@
 #include "server.h"
 
-server::server(
+Server::Server(
     boost::asio::io_context& io_context,
     boost::asio::strand<boost::asio::io_context::executor_type>& strand,
     const tcp::endpoint& endpoint)
@@ -10,11 +10,11 @@ server::server(
   run();
 }
 
-server::~server() { acceptor_.close(); }
+Server::~Server() { acceptor_.close(); }
 
-void server::run() {
+void Server::run() {
   auto new_participant =
-      std::make_shared<personInRoom>(io_context_, strand_, room_);
+      std::make_shared<PersonInRoom>(io_context_, strand_, room_);
 
   acceptor_.async_accept(new_participant->socket(),
                          boost::asio::bind_executor(
@@ -24,7 +24,7 @@ void server::run() {
                              }));
 }
 
-void server::onAccept(std::shared_ptr<personInRoom> new_participant,
+void Server::onAccept(std::shared_ptr<PersonInRoom> new_participant,
                       const boost::system::error_code& error) {
   if (!error) {
     new_participant->start();

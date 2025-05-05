@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     std::strncpy(nickname.data(), argv[1], MAX_NICKNAME - 1);
     nickname[MAX_NICKNAME - 1] = '\0';
 
-    client cli(nickname, io_context, endpoints);
+    Client cli(nickname, io_context, endpoints);
 
     std::thread t([&io_context]() { io_context.run(); });
 

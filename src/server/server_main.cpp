@@ -8,20 +8,16 @@ int main(int argc, char* argv[]) {
     }
 
     auto io_context = std::make_shared<boost::asio::io_context>();
-    auto work = std::make_shared<boost::asio::executor_work_guard<
-        boost::asio::io_context::executor_type>>(
-        boost::asio::make_work_guard(*io_context));
     auto strand = std::make_shared<
         boost::asio::strand<boost::asio::io_context::executor_type>>(
         boost::asio::make_strand(*io_context));
 
-    std::cout << "[" << std::this_thread::get_id() << "] server starts"
-              << std::endl;
+    std::cout << "server starts\n";
 
-    std::list<std::shared_ptr<server>> servers;
+    std::list<std::shared_ptr<Server>> servers;
     for (int i = 1; i < argc; ++i) {
       tcp::endpoint endpoint(tcp::v4(), std::atoi(argv[i]));
-      auto a_server = std::make_shared<server>(*io_context, *strand, endpoint);
+      auto a_server = std::make_shared<Server>(*io_context, *strand, endpoint);
       servers.push_back(a_server);
     }
 

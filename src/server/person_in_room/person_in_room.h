@@ -11,13 +11,13 @@
 
 using boost::asio::ip::tcp;
 
-class personInRoom : public Participant,
-                     public std::enable_shared_from_this<personInRoom> {
+class PersonInRoom : public Participant,
+                     public std::enable_shared_from_this<PersonInRoom> {
  public:
-  personInRoom(
+  PersonInRoom(
       boost::asio::io_context& io_context,
       boost::asio::strand<boost::asio::io_context::executor_type>& strand,
-      chatRoom& room);
+      ChatRoom& room);
 
   tcp::socket& socket();
   void start();
@@ -30,7 +30,7 @@ class personInRoom : public Participant,
 
   tcp::socket socket_;
   boost::asio::strand<boost::asio::io_context::executor_type>& strand_;
-  chatRoom& room_;
+  ChatRoom& room_;
   std::array<char, MAX_NICKNAME> nickname_{};
   std::array<char, MAX_MSG_SIZE> read_msg_{};
   std::deque<std::array<char, MAX_MSG_SIZE>> write_msgs_;

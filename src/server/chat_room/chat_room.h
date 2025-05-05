@@ -11,7 +11,7 @@
 #include "../../common.h"
 #include "../participant/participant.h"
 
-class chatRoom {
+class ChatRoom {
  public:
   void enter(std::shared_ptr<Participant> participant,
              const std::string& nickname);

@@ -1,14 +1,14 @@
 #include "person_in_room.h"
 
-personInRoom::personInRoom(
+PersonInRoom::PersonInRoom(
     boost::asio::io_context& io_context,
     boost::asio::strand<boost::asio::io_context::executor_type>& strand,
-    chatRoom& room)
+    ChatRoom& room)
     : socket_(io_context), strand_(strand), room_(room) {}
 
-tcp::socket& personInRoom::socket() { return socket_; }
+tcp::socket& PersonInRoom::socket() { return socket_; }
 
-void personInRoom::start() {
+void PersonInRoom::start() {
   boost::asio::async_read(
       socket_, boost::asio::buffer(nickname_),
       boost::asio::bind_executor(
@@ -17,7 +17,7 @@ void personInRoom::start() {
                                       size_t) { self->nicknameHandler(ec); }));
 }
 
-void personInRoom::onMessage(std::array<char, MAX_MSG_SIZE>& msg) {
+void PersonInRoom::onMessage(std::array<char, MAX_MSG_SIZE>& msg) {
   bool write_in_progress = !write_msgs_.empty();
   write_msgs_.push_back(msg);
   if (!write_in_progress) {
@@ -30,7 +30,7 @@ void personInRoom::onMessage(std::array<char, MAX_MSG_SIZE>& msg) {
   }
 }
 
-void personInRoom::nicknameHandler(const boost::system::error_code& error) {
+void PersonInRoom::nicknameHandler(const boost::system::error_code& error) {
   if (!error) {
     if (strlen(nickname_.data()) <= MAX_NICKNAME - 2) {
       strcat(nickname_.data(), ": ");
@@ -52,7 +52,7 @@ void personInRoom::nicknameHandler(const boost::system::error_code& error) {
   }
 }
 
-void personInRoom::readHandler(const boost::system::error_code& error) {
+void PersonInRoom::readHandler(const boost::system::error_code& error) {
   if (!error) {
     room_.broadcast(read_msg_, shared_from_this());
 
@@ -67,7 +67,7 @@ void personInRoom::readHandler(const boost::system::error_code& error) {
   }
 }
 
-void personInRoom::writeHandler(const boost::system::error_code& error) {
+void PersonInRoom::writeHandler(const boost::system::error_code& error) {
   if (!error) {
     write_msgs_.pop_front();
 

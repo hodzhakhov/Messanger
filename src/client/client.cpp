@@ -1,6 +1,6 @@
 #include "client.h"
 
-client::client(const std::array<char, MAX_NICKNAME>& nickname,
+Client::Client(const std::array<char, MAX_NICKNAME>& nickname,
                asio::io_context& io_context,
                const tcp::resolver::results_type& endpoints)
     : io_context_(io_context),
@@ -14,15 +14,15 @@ client::client(const std::array<char, MAX_NICKNAME>& nickname,
                       });
 }
 
-void client::write(const std::array<char, MAX_MSG_SIZE>& msg) {
+void Client::write(const std::array<char, MAX_MSG_SIZE>& msg) {
   asio::post(io_context_, [this, msg]() { this->innerWrite(msg); });
 }
 
-void client::close() {
+void Client::close() {
   asio::post(io_context_, [this]() { this->innerClose(); });
 }
 
-void client::onConnect(const boost::system::error_code& error) {
+void Client::onConnect(const boost::system::error_code& error) {
   if (!error) {
     asio::async_write(socket_, asio::buffer(nickname_),
                       [this](const boost::system::error_code& ec, auto) {
@@ -31,7 +31,7 @@ void client::onConnect(const boost::system::error_code& error) {
   }
 }
 
-void client::readHandler(const boost::system::error_code& error) {
+void Client::readHandler(const boost::system::error_code& error) {
   if (!error) {
     std::cout << read_msg_.data() << std::endl;
     asio::async_read(socket_, asio::buffer(read_msg_),
@@ -43,7 +43,7 @@ void client::readHandler(const boost::system::error_code& error) {
   }
 }
 
-void client::innerWrite(std::array<char, MAX_MSG_SIZE> msg) {
+void Client::innerWrite(std::array<char, MAX_MSG_SIZE> msg) {
   bool write_in_progress = !write_msgs_.empty();
   write_msgs_.push_back(msg);
   if (!write_in_progress) {
@@ -54,7 +54,7 @@ void client::innerWrite(std::array<char, MAX_MSG_SIZE> msg) {
   }
 }
 
-void client::writeHandler(const boost::system::error_code& error) {
+void Client::writeHandler(const boost::system::error_code& error) {
   if (!error) {
     write_msgs_.pop_front();
     if (!write_msgs_.empty()) {
@@ -68,7 +68,7 @@ void client::writeHandler(const boost::system::error_code& error) {
   }
 }
 
-void client::innerClose() {
+void Client::innerClose() {
   if (socket_.is_open()) {
     socket_.close();
   }

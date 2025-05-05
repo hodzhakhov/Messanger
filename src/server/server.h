@@ -9,22 +9,22 @@
 #include "chat_room/chat_room.h"
 #include "person_in_room/person_in_room.h"
 
-class server {
+class Server {
  public:
-  server(boost::asio::io_context& io_context,
+  Server(boost::asio::io_context& io_context,
          boost::asio::strand<boost::asio::io_context::executor_type>& strand,
          const tcp::endpoint& endpoint);
-  ~server();
+  ~Server();
 
  private:
   void run();
-  void onAccept(std::shared_ptr<personInRoom> new_participant,
+  void onAccept(std::shared_ptr<PersonInRoom> new_participant,
                 const boost::system::error_code& error);
 
   boost::asio::io_context& io_context_;
   boost::asio::strand<boost::asio::io_context::executor_type>& strand_;
   tcp::acceptor acceptor_;
-  chatRoom room_;
+  ChatRoom room_;
 };
 
 #endif

@@ -9,7 +9,7 @@ using boost::asio::ip::tcp;
 BOOST_AUTO_TEST_CASE(test_message_processing) {
   boost::asio::io_context io_context;
   auto strand = boost::asio::make_strand(io_context);
-  chatRoom room;
+  ChatRoom room;
 
   class mock_participant : public Participant {
    public:

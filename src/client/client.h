@@ -11,9 +11,9 @@
 using boost::asio::ip::tcp;
 namespace asio = boost::asio;
 
-class client {
+class Client {
  public:
-  client(const std::array<char, MAX_NICKNAME>& nickname,
+  Client(const std::array<char, MAX_NICKNAME>& nickname,
          asio::io_context& io_context,
          const tcp::resolver::results_type& endpoints);
 
