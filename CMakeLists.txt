@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.30)
 project(messenger)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_OSX_ARCHITECTURES "arm64")
 
@@ -10,6 +13,7 @@ if(POLICY CMP0167)
 endif()
 
 find_package(Boost REQUIRED COMPONENTS system thread unit_test_framework)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Test)
 
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
@@ -35,6 +39,13 @@ add_executable(client
 )
 target_link_libraries(client ${Boost_LIBRARIES})
 
+add_executable(qt_client 
+    src/qt/qt_main.cpp 
+    src/qt/chat_window.h
+    src/qt/chat_window.cpp
+)
+target_link_libraries(qt_client Qt6::Widgets ${Boost_LIBRARIES})
+
 enable_testing()
 
 add_executable(server_test 
@@ -50,4 +61,12 @@ add_executable(server_test
 )
 target_link_libraries(server_test ${Boost_LIBRARIES} Boost::unit_test_framework ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
+add_executable(qt_client_test 
+    src/qt/chat_window.h
+    src/qt/chat_window.cpp
+    test/qt_test.cpp
+)
+target_link_libraries(qt_client_test Qt6::Widgets ${Boost_LIBRARIES} Boost::unit_test_framework ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
 add_test(NAME server_tests COMMAND server_test)
+add_test(NAME qt_client_tests COMMAND qt_client_test)
